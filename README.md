@@ -42,6 +42,13 @@ A powerful Telegram bot that transcribes and summarizes voice notes using state-
    GROQ_API_KEY=your_groq_api_key
    ```
 
+5. Configure authorized users:
+   - Open `bot.py` and locate the `AUTHORIZED_USERS` array
+   - Add your Telegram user ID to the array (you can get your ID by messaging @userinfobot on Telegram)
+   ```python
+   AUTHORIZED_USERS = [your_telegram_id]  # Add more user IDs as needed
+   ```
+
 ## Usage 🎯
 
 1. Activate the virtual environment:
