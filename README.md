@@ -4,8 +4,9 @@ A powerful Telegram bot that transcribes and summarizes voice notes using state-
 
 ## Screenshots 📸
 
-<img width="700" alt="Image" src="https://github.com/user-attachments/assets/d1e03715-9fee-4937-b1fe-d06af70e0b95" />
-
+| Transcription Example | Summary Example |
+|:---:|:---:|
+| <img width="611" alt="Image" src="https://github.com/user-attachments/assets/cc4adcbd-247b-496a-9359-15ed56a97e00" /> | <img width="624" alt="Image" src="https://github.com/user-attachments/assets/39a6f1ef-f6f6-4563-8ff9-4d3ee6fe4cbf" /> |
 
 ## Features ✨
 
