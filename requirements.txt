@@ -1,5 +1,0 @@
-python-telegram-bot==20.7
-groq==0.4.1
-python-dotenv==1.0.0
-fastapi==0.104.1
-uvicorn==0.24.0

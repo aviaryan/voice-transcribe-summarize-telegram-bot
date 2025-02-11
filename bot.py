@@ -4,12 +4,10 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 from groq import Groq
 from pathlib import Path
 import tempfile
-from telegram.request import HTTPXRequest
-from fastapi import FastAPI, Request, Response
-import json
+from dotenv import load_dotenv
+import asyncio
 
-# Initialize FastAPI app
-app = FastAPI()
+load_dotenv()
 
 # Initialize Groq client
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
@@ -20,24 +18,14 @@ async def create_application():
     application = (
         Application.builder()
         .token(os.getenv("TELEGRAM_BOT_TOKEN"))
-        .updater(None)  # No updater needed for webhook
         .build()
     )
-    
+
     # Add handlers
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.VOICE, handle_voice))
     
     return application
-
-# Store application instance
-application = None
-
-@app.on_event("startup")
-async def startup():
-    """Initialize bot when FastAPI starts."""
-    global application
-    application = await create_application()
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Send a message when the command /start is issued."""
@@ -86,8 +74,6 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def transcribe_audio(file_path: str) -> str:
     """Transcribe audio using Whisper via Groq API."""
-    # Note: This is a placeholder. You'll need to implement the actual
-    # Groq Whisper API call based on their documentation
     completion = groq_client.chat.completions.create(
         model="whisper-large-v3-turbo",  # Replace with actual Groq Whisper model name
         messages=[
@@ -108,32 +94,17 @@ async def generate_summary(text: str) -> str:
     )
     return completion.choices[0].message.content
 
-@app.post("/api/webhook")
-async def webhook(request: Request):
-    """Handle incoming webhook requests from Telegram."""
-    try:
-        data = await request.json()
-        update = Update.de_json(data, application.bot)
-        await application.process_update(update)
-        return Response(status_code=200)
-    except Exception as e:
-        return Response(content=str(e), status_code=500)
+async def main():
+    """Start the bot."""
+    application = await create_application()
+    print("Starting bot...")
+    await application.initialize()
+    await application.start()
+    await application.run_polling()
+    await application.stop()
 
-@app.get("/api/set_webhook")
-async def set_webhook():
-    """Endpoint to set up the webhook."""
-    global application
-    
-    # Check if application is initialized
-    if application is None:
-        application = await create_application()
-    
-    webhook_url = os.getenv("WEBHOOK_URL")
-    if not webhook_url:
-        return {"error": "WEBHOOK_URL environment variable not set"}
-    
+if __name__ == '__main__':
     try:
-        await application.bot.set_webhook(url=f"{webhook_url}/api/webhook")
-        return {"message": "Webhook set successfully"}
-    except Exception as e:
-        return {"error": str(e)}
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("Bot stopped gracefully!")
