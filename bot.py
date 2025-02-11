@@ -93,14 +93,15 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def transcribe_audio(file_path: str) -> str:
     """Transcribe audio using Whisper via Groq API."""
     with open(file_path, "rb") as file:
-        translation = groq_client.audio.translations.create(
+        transcription = groq_client.audio.transcriptions.create(
             file=(file_path, file.read()), # Required audio file
-            model="whisper-large-v3", # Required model to use for translation
-            prompt="Specify context or spelling",  # Optional
-            response_format="json",  # Optional
-            temperature=0.0  # Optional
+            model="distil-whisper-large-v3-en", # Required model to use for transcription
+            # ^ using cheapest model to manage costs (https://groq.com/pricing/)
+            # prompt="Specify context or spelling",  # Optional
+            # response_format="json",  # Optional
+            # temperature=0.0  # Optional
         )
-        return translation.text.strip()
+        return transcription.text.strip()
 
 async def generate_summary(text: str) -> str:
     """Generate a summary using LLama 3 via Groq API."""
