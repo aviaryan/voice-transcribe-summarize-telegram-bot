@@ -49,14 +49,37 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Generate summary using LLama 3 via Groq
         summary = await generate_summary(transcription)
         
-        # Send results
-        await status_message.edit_text(
-            "📝 *Transcription:*\n"
-            f"{transcription}\n\n"
-            "📌 *Summary:*\n"
-            f"{summary}",
-            parse_mode='Markdown'
-        )
+        # Split and send transcription if it's too long
+        if len(transcription) > 3000:  # Leave room for summary and formatting
+            await status_message.edit_text("📝 *Transcription (Part 1):*", parse_mode='Markdown')
+            
+            # Split transcription into chunks of 4000 characters
+            chunk_size = 4000
+            transcription_chunks = [transcription[i:i + chunk_size] 
+                                 for i in range(0, len(transcription), chunk_size)]
+            
+            # Send transcription chunks
+            for i, chunk in enumerate(transcription_chunks, 1):
+                await update.message.reply_text(
+                    f"*Transcription (Part {i}):*\n{chunk}",
+                    parse_mode='Markdown'
+                )
+            
+            # Send summary separately
+            await update.message.reply_text(
+                "📌 *Summary:*\n"
+                f"{summary}",
+                parse_mode='Markdown'
+            )
+        else:
+            # Send everything in one message if it's short enough
+            await status_message.edit_text(
+                "📝 *Transcription:*\n"
+                f"{transcription}\n\n"
+                "📌 *Summary:*\n"
+                f"{summary}",
+                parse_mode='Markdown'
+            )
         
         # Cleanup temporary file
         os.unlink(temp_path)
@@ -94,7 +117,8 @@ async def generate_summary(text: str) -> str:
         messages=[
             {"role": "system", "content": "Generate a concise summary of the following text:"},
             {"role": "user", "content": text}
-        ]
+        ],
+        max_completion_tokens=32768,
     )
     return completion.choices[0].message.content
 
