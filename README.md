@@ -2,6 +2,11 @@
 
 A powerful Telegram bot that transcribes and summarizes voice notes using state-of-the-art AI models. Built with Python and powered by Groq's API with Whisper and Llama 3 model for transcription and summarization.
 
+## Screenshots 📸
+
+<img width="700" alt="Image" src="https://github.com/user-attachments/assets/d1e03715-9fee-4937-b1fe-d06af70e0b95" />
+
+
 ## Features ✨
 
 - Transcribe voice notes from forwarded messages
