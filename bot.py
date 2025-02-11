@@ -122,6 +122,12 @@ async def webhook(request: Request):
 @app.get("/api/set_webhook")
 async def set_webhook():
     """Endpoint to set up the webhook."""
+    global application
+    
+    # Check if application is initialized
+    if application is None:
+        application = await create_application()
+    
     webhook_url = os.getenv("WEBHOOK_URL")
     if not webhook_url:
         return {"error": "WEBHOOK_URL environment variable not set"}
