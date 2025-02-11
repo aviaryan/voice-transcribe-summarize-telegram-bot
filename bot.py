@@ -2,10 +2,8 @@ import os
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 from groq import Groq
-from pathlib import Path
 import tempfile
 from dotenv import load_dotenv
-import asyncio
 
 load_dotenv()
 
@@ -89,25 +87,16 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def transcribe_audio(file_path: str) -> str:
     """Transcribe audio using Whisper via Groq API."""
-    # completion = groq_client.chat.completions.create(
-    #     model="whisper-large-v3-turbo",  # Replace with actual Groq Whisper model name
-    #     messages=[
-    #         {"role": "system", "content": "Transcribe the following audio file accurately."},
-    #         {"role": "user", "content": file_path}
-    #     ]
-    # )
-    # return completion.choices[0].message.content
     with open(file_path, "rb") as file:
         # Create a translation of the audio file
         translation = groq_client.audio.translations.create(
-        file=(file_path, file.read()), # Required audio file
-        model="whisper-large-v3", # Required model to use for translation
-        prompt="Specify context or spelling",  # Optional
-        response_format="json",  # Optional
-        temperature=0.0  # Optional
+            file=(file_path, file.read()), # Required audio file
+            model="whisper-large-v3", # Required model to use for translation
+            prompt="Specify context or spelling",  # Optional
+            response_format="json",  # Optional
+            temperature=0.0  # Optional
         )
-        # Print the translation text
-        print(translation.text)
+        # print(translation.text)
         return translation.text
 
 async def generate_summary(text: str) -> str:
@@ -138,25 +127,5 @@ application.add_handler(CommandHandler("start", start))
 application.add_handler(MessageHandler(filters.VOICE, handle_voice))
 application.add_error_handler(error_handler)
 
-# async def main():
-#     """Start the bot."""
-#     application = await create_application()
-#     print("Starting bot...")
-    
-#     # Add error handler
-#     application.add_error_handler(error_handler)
-    
-#     print("Bot initialized successfully")
-#     print("Bot started successfully")
-#     await application.initialize()
-#     try:
-#         await application.start()
-#         await application.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
-#     finally:
-#         await application.stop()
-
-
-
 if __name__ == '__main__':
-    # asyncio.run(main())
     application.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
