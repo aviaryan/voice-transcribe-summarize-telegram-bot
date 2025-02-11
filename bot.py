@@ -30,6 +30,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle voice messages and voice notes."""
     try:
+        # Check user authorization
+        if update.effective_user.id != 95165304:
+            await update.message.reply_text("⛔ Sorry, you are not authorized to use this bot. Contact @aviaryan.")
+            return
+
         # Send initial status
         status_message = await update.message.reply_text("🎵 Processing your voice note...")
         
