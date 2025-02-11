@@ -1,10 +1,86 @@
-# Voice Note Summarizer Bot for Telegram
+# Voice Note Summarizer Bot for Telegram 🎙️📝
 
-This is a telegram bot that can be hosted on a serverless setup. The code is created in python.
+A powerful Telegram bot that transcribes and summarizes voice notes using state-of-the-art AI models. Built with Python and powered by Groq's API with Whisper and Llama 3 model for transcription and summarization.
 
-This bot accepts message forwards that contain voice notes in telegram. As well as you can record your own voice and send that voice note to the bot.
+## Features ✨
 
-Once the bot receives a telegram message with a voice note attached it transcribes it using Groq's api with the latest llama 3 model. Then it feeds it to whisper again using Groq api.
-Eventually the bot returns both the transcription in a well formatted format, as well as the summary of the transcript.
+- Transcribe voice notes from forwarded messages
+- Handle direct voice note recordings
+- Generate accurate transcriptions using Whisper
+- Provide concise summaries of the transcribed content using Llama 3
+- Support for multiple audio formats
+- Well-formatted, easy-to-read output
 
-We use pipenv to manage python dependencies.
+## Prerequisites 📋
+
+- Python 3.10 or higher
+- pipenv (Python package manager)
+- Telegram Bot Token (from [@BotFather](https://t.me/botfather))
+- Groq API Key ([Get it here](https://console.groq.com))
+
+## Installation 🚀
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/voice-note-summarize-bot.git
+   cd voice-note-summarize-bot
+   ```
+
+2. Install dependencies using pipenv:
+   ```bash
+   pipenv install
+   ```
+
+3. Create a `.env` file in the root directory:
+   ```bash
+   cp .env.copy .env
+   ```
+
+4. Fill in your environment variables in the `.env` file:
+   ```
+   TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+   GROQ_API_KEY=your_groq_api_key
+   ```
+
+## Usage 🎯
+
+1. Activate the virtual environment:
+   ```bash
+   pipenv shell
+   ```
+
+2. Start the bot:
+   ```bash
+   python bot.py
+   ```
+
+3. In Telegram:
+   - Forward any message containing a voice note to the bot
+   - Record and send a voice note directly to the bot
+   - Wait for the bot to process and return both transcription and summary
+
+## How it Works 🔄
+
+1. The bot receives a voice note through Telegram
+2. Audio is processed and sent to Groq's API
+3. Whisper model transcribes the audio content
+4. Another pass through Groq's API generates a concise summary using Llama 3 model
+5. Both transcription and summary are returned to the user in a well-formatted message
+
+## Contributing 🤝
+
+Contributions are welcome! Feel free to:
+- Open issues for bugs or feature requests
+- Submit pull requests
+- Improve documentation
+- Share feedback
+
+## License 📄
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments 🙏
+
+- [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot) for the Telegram Bot API wrapper
+- [Groq](https://groq.com) for their powerful AI models and API
+- All contributors and users of this bot

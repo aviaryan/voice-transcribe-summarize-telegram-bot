@@ -4,8 +4,10 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 from groq import Groq
 import tempfile
 from dotenv import load_dotenv
-
 load_dotenv()
+
+# List of authorized user IDs
+AUTHORIZED_USERS = [95165304]  # Add more user IDs as needed
 
 # Initialize Groq client
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
@@ -31,7 +33,7 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle voice messages and voice notes."""
     try:
         # Check user authorization
-        if update.effective_user.id != 95165304:
+        if update.effective_user.id not in AUTHORIZED_USERS:
             await update.message.reply_text("⛔ Sorry, you are not authorized to use this bot. Contact @aviaryan.")
             return
 
