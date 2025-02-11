@@ -1,4 +1,4 @@
-# Voice Note Summarizer Bot for Telegram 🎙️📝
+# Voice Note Transcription and Summarizer Bot for Telegram 🎙️📝
 
 A powerful Telegram bot that transcribes and summarizes voice notes using state-of-the-art AI models. Built with Python and powered by Groq's API with Whisper and Llama 3 model for transcription and summarization.
 
@@ -22,8 +22,8 @@ A powerful Telegram bot that transcribes and summarizes voice notes using state-
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/aviaryan/voice-note-transcribe-summarize-telegram-bot.git
-   cd voice-note-transcribe-summarize-telegram-bot
+   git clone https://github.com/aviaryan/voice-transcribe-summarize-telegram-bot.git
+   cd voice-transcribe-summarize-telegram-bot
    ```
 
 2. Install dependencies using pipenv:
