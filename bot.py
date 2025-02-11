@@ -12,20 +12,6 @@ load_dotenv()
 # Initialize Groq client
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-# Initialize bot application
-async def create_application():
-    """Create and configure the bot application."""
-    application = (
-        Application.builder()
-        .token(os.getenv("TELEGRAM_BOT_TOKEN"))
-        .build()
-    )
-
-    # Add handlers
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(MessageHandler(filters.VOICE, handle_voice))
-    
-    return application
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Send a message when the command /start is issued."""
@@ -100,26 +86,41 @@ async def generate_summary(text: str) -> str:
     )
     return completion.choices[0].message.content
 
-async def main():
-    """Start the bot."""
-    application = await create_application()
-    print("Starting bot...")
-    
-    # Add error handler
-    application.add_error_handler(error_handler)
-    
-    print("Bot initialized successfully")
-    print("Bot started successfully")
-    await application.initialize()
-    try:
-        await application.start()
-        await application.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
-    finally:
-        await application.stop()
-
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Log Errors caused by Updates."""
     print(f"Update {update} caused error {context.error}")
 
+# Initialize bot application
+"""Create and configure the bot application."""
+application = (
+    Application.builder()
+    .token(os.getenv("TELEGRAM_BOT_TOKEN"))
+    .build()
+)
+# Add handlers
+application.add_handler(CommandHandler("start", start))
+application.add_handler(MessageHandler(filters.VOICE, handle_voice))
+application.add_error_handler(error_handler)
+
+# async def main():
+#     """Start the bot."""
+#     application = await create_application()
+#     print("Starting bot...")
+    
+#     # Add error handler
+#     application.add_error_handler(error_handler)
+    
+#     print("Bot initialized successfully")
+#     print("Bot started successfully")
+#     await application.initialize()
+#     try:
+#         await application.start()
+#         await application.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
+#     finally:
+#         await application.stop()
+
+
+
 if __name__ == '__main__':
-    asyncio.run(main())
+    # asyncio.run(main())
+    application.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
