@@ -29,13 +29,19 @@ async def create_application():
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Send a message when the command /start is issued."""
-    await update.message.reply_text(
-        "👋 Hi! I'm a Voice Note Summarizer Bot.\n\n"
-        "You can:\n"
-        "1. Forward me voice messages\n"
-        "2. Send me direct voice recordings\n\n"
-        "I'll transcribe them and provide you with both the transcription and a summary!"
-    )
+    print(f"Received start command from user: {update.effective_user.id}")
+    user_name = update.effective_user.first_name
+    try:
+        await update.message.reply_text(
+            f"👋 Hi {user_name}! I'm a Voice Note Summarizer Bot.\n\n"
+            "You can:\n"
+            "1. Forward me voice messages\n"
+            "2. Send me direct voice recordings\n\n"
+            "I'll transcribe them and provide you with both the transcription and a summary!"
+        )
+        print(f"Sent welcome message to user: {update.effective_user.id}")
+    except Exception as e:
+        print(f"Error in start handler: {str(e)}")
 
 async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle voice messages and voice notes."""
@@ -98,13 +104,22 @@ async def main():
     """Start the bot."""
     application = await create_application()
     print("Starting bot...")
+    
+    # Add error handler
+    application.add_error_handler(error_handler)
+    
+    print("Bot initialized successfully")
+    print("Bot started successfully")
     await application.initialize()
-    await application.start()
-    await application.run_polling()
-    await application.stop()
+    try:
+        await application.start()
+        await application.run_polling(allowed_updates=Update.ALL_TYPES, drop_pending_updates=True)
+    finally:
+        await application.stop()
+
+async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Log Errors caused by Updates."""
+    print(f"Update {update} caused error {context.error}")
 
 if __name__ == '__main__':
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        print("Bot stopped gracefully!")
+    asyncio.run(main())
