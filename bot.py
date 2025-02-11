@@ -89,7 +89,7 @@ async def transcribe_audio(file_path: str) -> str:
     # Note: This is a placeholder. You'll need to implement the actual
     # Groq Whisper API call based on their documentation
     completion = groq_client.chat.completions.create(
-        model="whisper-1",  # Replace with actual Groq Whisper model name
+        model="whisper-large-v3-turbo",  # Replace with actual Groq Whisper model name
         messages=[
             {"role": "system", "content": "Transcribe the following audio file accurately."},
             {"role": "user", "content": file_path}
@@ -100,7 +100,7 @@ async def transcribe_audio(file_path: str) -> str:
 async def generate_summary(text: str) -> str:
     """Generate a summary using LLama 3 via Groq API."""
     completion = groq_client.chat.completions.create(
-        model="llama3-large",  # Replace with actual Groq LLama 3 model name
+        model="llama-3.3-70b-versatile",  # Replace with actual Groq LLama 3 model name
         messages=[
             {"role": "system", "content": "Generate a concise summary of the following text:"},
             {"role": "user", "content": text}
