@@ -1,0 +1,14 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+python-telegram-bot = "==20.7"
+groq = "==0.4.1"
+python-dotenv = "==1.0.0"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
