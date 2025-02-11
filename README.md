@@ -22,8 +22,8 @@ A powerful Telegram bot that transcribes and summarizes voice notes using state-
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/voice-note-summarize-bot.git
-   cd voice-note-summarize-bot
+   git clone https://github.com/aviaryan/voice-note-transcribe-summarize-telegram-bot.git
+   cd voice-note-transcribe-summarize-telegram-bot
    ```
 
 2. Install dependencies using pipenv:
@@ -78,9 +78,3 @@ Contributions are welcome! Feel free to:
 ## License 📄
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments 🙏
-
-- [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot) for the Telegram Bot API wrapper
-- [Groq](https://groq.com) for their powerful AI models and API
-- All contributors and users of this bot
