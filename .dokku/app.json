@@ -1,6 +1,6 @@
 {
 	"formation": {
-		"worker": {
+		"web": {
 			"quantity": 1
 		}
 	}
