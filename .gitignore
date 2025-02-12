@@ -3,4 +3,4 @@
 __pycache__
 
 # notes on my dokku server
-docs/MY_DOKKU.md 
+.dokku/MY_DOKKU.md 

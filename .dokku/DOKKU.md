@@ -15,6 +15,9 @@ dokku apps:create tgvn
 # set the config vars
 dokku config:set tgvn TELEGRAM_BOT_TOKEN=
 dokku config:set tgvn GROQ_API_KEY=
+# set the app.json and Procfile path
+dokku app-json:set tgvn appjson-path .dokku/app.json
+dokku ps:set tgvn procfile-path .dokku/Procfile
 ```
 
 ### Step 2 - Deploy the app
