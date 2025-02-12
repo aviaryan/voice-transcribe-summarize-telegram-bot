@@ -2,5 +2,5 @@
 .env
 __pycache__
 
-# my notes on dokku
-docs/DOKKU.md 
+# notes on my dokku server
+docs/MY_DOKKU.md 
