@@ -1,3 +1,6 @@
 .DS_Store
 .env
 __pycache__
+
+# my notes on dokku
+docs/DOKKU.md 
