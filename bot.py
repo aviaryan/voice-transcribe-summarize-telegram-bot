@@ -117,6 +117,33 @@ async def generate_summary(text: str) -> str:
     )
     return completion.choices[0].message.content
 
+async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handle text messages and generate summaries."""
+    try:
+        # Check user authorization
+        if update.effective_user.id not in AUTHORIZED_USERS:
+            await update.message.reply_text("⛔ Sorry, you are not authorized to use this bot. Contact @aviaryan.")
+            return
+
+        # Send initial status
+        status_message = await update.message.reply_text("📝 Generating summary...")
+        
+        # Get the text message
+        text = update.message.text
+        
+        # Generate summary using LLama 3 via Groq
+        summary = await generate_summary(text)
+        
+        # Send the summary
+        await status_message.edit_text(
+            "📌 *Summary:*\n"
+            f"{summary}",
+            parse_mode='Markdown'
+        )
+        
+    except Exception as e:
+        await update.message.reply_text(f"❌ Sorry, an error occurred: {str(e)}")
+
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Log Errors caused by Updates."""
     print(f"Update {update} caused error {context.error}")
@@ -131,6 +158,7 @@ application = (
 # Add handlers
 application.add_handler(CommandHandler("start", start))
 application.add_handler(MessageHandler(filters.VOICE, handle_voice))
+application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))  # Add text message handler
 application.add_error_handler(error_handler)
 
 if __name__ == '__main__':
