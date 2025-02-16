@@ -4,6 +4,9 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 from groq import Groq
 import tempfile
 from dotenv import load_dotenv
+import asyncio
+from collections import defaultdict
+from time import time
 load_dotenv()
 
 # List of authorized user IDs
@@ -12,6 +15,12 @@ AUTHORIZED_USERS = [95165304]  # Add more user IDs as needed
 # Initialize Groq client
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
+# Message buffer to store messages per user
+message_buffers = defaultdict(list)
+# Store the task references to cancel them if needed
+buffer_tasks = {}
+# Buffer timeout in seconds
+BUFFER_TIMEOUT = 0.5
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Send a message when the command /start is issued."""
@@ -117,28 +126,79 @@ async def generate_summary(text: str) -> str:
     )
     return completion.choices[0].message.content
 
-async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handle text messages and generate summaries."""
+async def process_buffered_messages(user_id: int, context: ContextTypes.DEFAULT_TYPE):
+    """Process all buffered messages for a user after the timeout."""
     try:
-        # Check user authorization
-        if update.effective_user.id not in AUTHORIZED_USERS:
-            await update.message.reply_text("⛔ Sorry, you are not authorized to use this bot. Contact @aviaryan.")
+        await asyncio.sleep(BUFFER_TIMEOUT)
+        
+        # Get all messages from the buffer
+        messages = message_buffers[user_id]
+        if not messages:
             return
-
-        # Send initial status
-        status_message = await update.message.reply_text("📝 Generating summary...")
+            
+        # Get the chat_id and original message for reply
+        chat_id = messages[0]['chat_id']
+        original_message = messages[0]['message']
         
-        # Get the text message
-        text = update.message.text
+        # Combine all message texts
+        combined_text = "\n".join(msg['text'] for msg in messages)
         
-        # Generate summary using LLama 3 via Groq
-        summary = await generate_summary(text)
+        # Clear the buffer for this user
+        message_buffers[user_id].clear()
+        
+        # Send processing status
+        status_message = await context.bot.send_message(
+            chat_id=chat_id,
+            text="📝 Generating summary..."
+        )
+        
+        # Generate summary
+        summary = await generate_summary(combined_text)
         
         # Send the summary
         await status_message.edit_text(
             "📌 *Summary:*\n"
             f"{summary}",
             parse_mode='Markdown'
+        )
+        
+    except Exception as e:
+        if messages and messages[0]['chat_id']:
+            await context.bot.send_message(
+                chat_id=messages[0]['chat_id'],
+                text=f"❌ Sorry, an error occurred: {str(e)}"
+            )
+    finally:
+        # Clean up
+        if user_id in buffer_tasks:
+            del buffer_tasks[user_id]
+
+async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handle text messages and buffer them for combined summary."""
+    try:
+        user_id = update.effective_user.id
+        
+        # Check user authorization
+        if user_id not in AUTHORIZED_USERS:
+            await update.message.reply_text("⛔ Sorry, you are not authorized to use this bot. Contact @aviaryan.")
+            return
+        
+        # Store message info
+        message_info = {
+            'text': update.message.text,
+            'chat_id': update.effective_chat.id,
+            'message': update.message,
+            'timestamp': time()
+        }
+        message_buffers[user_id].append(message_info)
+        
+        # Cancel existing task if any
+        if user_id in buffer_tasks and not buffer_tasks[user_id].done():
+            buffer_tasks[user_id].cancel()
+        
+        # Create new task to process messages after timeout
+        buffer_tasks[user_id] = asyncio.create_task(
+            process_buffered_messages(user_id, context)
         )
         
     except Exception as e:
